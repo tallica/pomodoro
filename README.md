@@ -1,0 +1,155 @@
+# Pomodoro
+
+A native macOS Pomodoro timer that lives in the status bar. No window, no dock
+icon — a countdown in the menu bar, a menu to drive it, and a session log it
+summarises by day, week and month.
+
+Written in Go, with the menu bar UI built on [menuet](https://github.com/caseymrm/menuet)
+(AppKit `NSStatusItem` / `NSMenu` through cgo).
+
+> [!WARNING]
+> **AI-assisted project**
+>
+> This codebase was built with Claude Code. It works for the author's specific
+> setup but has not been independently audited. Review the code before running
+> it in any security-sensitive or production environment.
+
+## Install
+
+```sh
+make install     # builds Pomodoro.app and copies it to /Applications
+open /Applications/Pomodoro.app
+```
+
+Or just `make run` to build and launch it from the source directory.
+
+To start it automatically, open the menu and tick **Start at Login**.
+
+## Using it
+
+The status item is monochrome — it takes the menu bar's own label color, so it
+inverts properly in dark mode and over a tinted wallpaper. Phase is carried by
+shape, not hue:
+
+```
+● 24:31     focusing        solid dot
+○ 04:12     on a break      hollow dot
+● 12:04     paused          dimmed
+● 3         idle, three pomodoros done today
+```
+
+Turn off **Show countdown in menu bar** and it shrinks to the dot alone, which
+is the narrowest it gets — useful on a crowded bar.
+
+The menu holds everything else:
+
+```
+Focus  24:31 left
+████████░░░░  33%  ·  round 2 of 4  ·  next: Short break
+──────────────────────────────────────
+Pause                              ⌃⌥Space
+Skip to Short break                ⌃⌥S
+Restart Focus
+──────────────────────────────────────
+Today         4 ·  1h 40m   ▸
+This week    15 ·  6h 15m   ▸
+This month   62 · 26h 12m   ▸
+──────────────────────────────────────
+Settings                     ▸
+Start at Login
+Quit Pomodoro
+```
+
+`⌃⌥Space` (start / pause) and `⌃⌥S` (skip) work system-wide, so you never have
+to leave what you are doing to start a round.
+
+Each of the three stat rows opens a breakdown: today lists every session with
+its start and end time and tracks your daily goal; this week draws a bar per
+day; this month draws a bar per week and holds an **All time** summary with
+your streak and totals.
+
+## Settings
+
+Everything in the Settings submenu is saved immediately:
+
+| Setting | Default | Notes |
+| --- | --- | --- |
+| Focus | 25 min | presets plus a **Custom…** prompt |
+| Short break | 5 min | |
+| Long break | 15 min | |
+| Long break after | 4 rounds | only *completed* focus rounds count |
+| Auto-start breaks | on | |
+| Auto-start next focus | off | |
+| Play a sound | on | system sounds, no assets bundled |
+| Show notifications | on | |
+| Show countdown in menu bar | on | off shows just a status dot |
+| Daily goal | 8 | drives the progress bar under Today |
+
+Changing a length never disturbs a phase that is already running — it applies
+from the next one.
+
+## Where your data lives
+
+```
+~/Library/Application Support/Pomodoro/
+├── config.json      settings
+└── sessions.jsonl   one JSON object per session, append-only
+```
+
+The session log is plain JSON Lines, so it is easy to query yourself:
+
+```sh
+jq -s 'map(select(.kind=="focus" and .completed)) | length' \
+  ~/Library/Application\ Support/Pomodoro/sessions.jsonl
+```
+
+Deleting the app leaves this folder alone; delete it by hand to start over.
+
+### What counts as a session
+
+- A focus round that reaches zero is recorded at its **planned** length. If the
+  Mac sleeps through the deadline, the sleep is not banked as work.
+- A focus round you abandon is recorded as interrupted, with the time it
+  actually ran — unless it ran for under a minute, which is a misclick rather
+  than history.
+- Skipping a round does **not** count toward the long break.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Development
+
+```sh
+make check     # gofmt, go vet, go test
+make preview   # dump the whole menu to menu-preview.json without opening a window
+make bundle    # build and ad-hoc sign Pomodoro.app
+```
+
+```
+main.go                      wiring
+internal/pomodoro/config.go  settings, load/save, bounds
+internal/pomodoro/timer.go   the state machine (deadline-based, sleep-safe)
+internal/pomodoro/store.go   append-only session log and the stats over it
+internal/ui/menu.go          status item and menu
+internal/ui/settings.go      settings submenu
+```
+
+`make preview` is the quickest way to see a UI change: it renders the entire
+menu, submenus expanded, as JSON — no GUI needed.
+
+Notifications require a signed bundle, which `make bundle` handles with an
+ad-hoc signature. To ship it to other machines, sign with a real identity:
+
+```sh
+make bundle IDENTITY="Developer ID Application: Your Name (TEAMID)"
+```
+
+The app reports it in the menu if macOS has notifications denied, rather than
+silently dropping them.
+
+## Licence
+
+[MIT](LICENSE) © Michał Lipski
