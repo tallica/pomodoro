@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-09-19
+## [0.1.0] - 2026-09-19
 
 Initial release.
 
@@ -51,6 +51,6 @@ Initial release.
   from the next one.
 
 <!-- Add compare links once this has a remote, e.g.
-[Unreleased]: https://github.com/OWNER/pomodoro/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/OWNER/pomodoro/releases/tag/v1.0.0
+[Unreleased]: https://github.com/OWNER/pomodoro/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/OWNER/pomodoro/releases/tag/v0.1.0
 -->

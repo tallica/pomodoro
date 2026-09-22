@@ -2,7 +2,7 @@ APP         := Pomodoro
 EXEC        := pomodoro
 BUNDLE      := $(APP).app
 IDENTIFIER  := pl.tallica.pomodoro
-VERSION     := 1.0.0
+VERSION     := 0.1.0
 
 # Ad-hoc signing by default. macOS only delivers notifications from a signed
 # bundle, so even a local build has to be signed. Override with a Developer ID
