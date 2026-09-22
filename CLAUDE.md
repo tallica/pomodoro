@@ -130,7 +130,7 @@ back*, so what is on disk is what is running.
   menu. Do not add a Quit item.
 - New status items land in the *leftmost* third-party slot, which on a notched
   MacBook with a busy menu bar means invisible. Position can be nudged with
-  `defaults write com.tallica.pomodoro "NSStatusItem Preferred Position Item-0" -float <x>`.
+  `defaults write pl.tallica.pomodoro "NSStatusItem Preferred Position Item-0" -float <x>`.
 
 ### UI conventions
 

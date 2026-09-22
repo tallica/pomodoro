@@ -1,7 +1,7 @@
 APP         := Pomodoro
 EXEC        := pomodoro
 BUNDLE      := $(APP).app
-IDENTIFIER  := com.tallica.pomodoro
+IDENTIFIER  := pl.tallica.pomodoro
 VERSION     := 1.0.0
 
 # Ad-hoc signing by default. macOS only delivers notifications from a signed

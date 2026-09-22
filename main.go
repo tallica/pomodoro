@@ -33,7 +33,7 @@ func main() {
 
 	app := menuet.App()
 	app.Name = "Pomodoro"
-	app.Label = "com.tallica.pomodoro"
+	app.Label = "pl.tallica.pomodoro"
 	app.QuitLabel = "Quit Pomodoro"
 
 	// The engine's callbacks fire only once the run loop is going, by which
