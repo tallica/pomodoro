@@ -19,13 +19,14 @@ type UI struct {
 	store   *pomodoro.Store
 	dataDir string
 	cfgPath string
+	version string
 
 	notifyDenied atomic.Bool
 }
 
 // New wires a UI onto the menuet application singleton.
-func New(app *menuet.Application, engine *pomodoro.Engine, store *pomodoro.Store, dataDir, cfgPath string) *UI {
-	return &UI{app: app, engine: engine, store: store, dataDir: dataDir, cfgPath: cfgPath}
+func New(app *menuet.Application, engine *pomodoro.Engine, store *pomodoro.Store, dataDir, cfgPath, version string) *UI {
+	return &UI{app: app, engine: engine, store: store, dataDir: dataDir, cfgPath: cfgPath, version: version}
 }
 
 // Install registers the menu and paints the initial state.

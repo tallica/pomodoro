@@ -13,6 +13,10 @@ import (
 	"github.com/tallica/pomodoro/internal/ui"
 )
 
+// version is set via -ldflags "-X main.version=..." by the Makefile, from
+// `git describe`. Left at its default for `go build`/`go run` without it.
+var version = "dev"
+
 func main() {
 	log.SetFlags(0)
 
@@ -45,7 +49,7 @@ func main() {
 		OnSession:  func(s pomodoro.Session) { face.OnSession(s) },
 	})
 
-	face = ui.New(app, engine, store, dir, cfgPath)
+	face = ui.New(app, engine, store, dir, cfgPath, version)
 	face.Install()
 
 	wg, ctx := app.GracefulShutdownHandles()

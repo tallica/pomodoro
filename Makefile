@@ -2,7 +2,8 @@ APP         := Pomodoro
 EXEC        := pomodoro
 BUNDLE      := $(APP).app
 IDENTIFIER  := pl.tallica.pomodoro
-VERSION     := 0.1.0
+VERSION     := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+LDFLAGS     := -ldflags "-s -w -X main.version=$(VERSION)"
 
 # Ad-hoc signing by default. macOS only delivers notifications from a signed
 # bundle, so even a local build has to be signed. Override with a Developer ID
@@ -26,7 +27,7 @@ bundle: $(BINARY) $(PLIST) $(ICON) ## Build and sign Pomodoro.app
 
 $(BINARY): $(SOURCES) go.mod go.sum
 	@mkdir -p "$(dir $@)"
-	go build -trimpath -ldflags "-s -w" -o "$@" .
+	go build -trimpath $(LDFLAGS) -o "$@" .
 
 $(ICON):
 	@mkdir -p "$(dir $@)"

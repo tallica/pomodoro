@@ -47,6 +47,10 @@ func (u *UI) settings() []menuet.MenuItem {
 			Text:    "Open data folder",
 			Clicked: func() { _ = exec.Command("open", u.dataDir).Run() },
 		},
+		menuet.Separator{},
+		menuet.Regular{
+			Runs: []menuet.TextRun{{Text: "Pomodoro " + u.version, Color: menuet.LabelTertiary}},
+		},
 	}
 }
 
