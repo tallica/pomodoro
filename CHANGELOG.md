@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Status bar icon is now a tomato graphic.** A template image that AppKit
+  recolors with the menu bar, white on a dark bar and black on a light one, like
+  the system icons. Solid while focusing, outlined on a break, with a pause mark
+  when paused. The item is no longer dimmed to gray when idle or paused.
+
 ## [0.1.0] - 2026-09-19
 
 Initial release.

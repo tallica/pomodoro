@@ -136,9 +136,13 @@ back*, so what is on disk is what is running.
 
 - **The status item and menu are monochrome.** Use only `LabelPrimary`,
   `LabelSecondary`, `LabelTertiary` — never `System*` hues, which wash out
-  against the menu's translucent material and read badly in dark mode. State is
-  carried by shape (solid dot focusing, hollow on a break) and weight (dimmed
-  when idle or paused), never color. No emoji.
+  against the menu's translucent material and read badly in dark mode. No emoji.
+- **The status item icon is a template image** drawn by `cmd/statusicon` into
+  `Contents/Resources` at bundle time (`tomato-{focus,break}[-paused]`, 1x and
+  @2x). Template images get AppKit's menu-bar tinting for free, so the
+  status item's runs carry **no color at all**: no dimming for idle or paused.
+  State is carried by the icon's shape only. A bare binary without the bundle
+  falls back to a text glyph (`haveIcons`).
 - **Do not use `Regular.Subtitle`.** It maps to `NSMenuItem.subtitle`, a plain
   string that drops run styling, and in practice renders as an empty band that
   still reserves height. Use a second `Regular` row instead.

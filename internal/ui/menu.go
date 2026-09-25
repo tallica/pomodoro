@@ -2,7 +2,9 @@ package ui
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -20,13 +22,14 @@ type UI struct {
 	dataDir string
 	cfgPath string
 	version string
+	icons   bool // status-bar images are bundled; see haveIcons
 
 	notifyDenied atomic.Bool
 }
 
 // New wires a UI onto the menuet application singleton.
 func New(app *menuet.Application, engine *pomodoro.Engine, store *pomodoro.Store, dataDir, cfgPath, version string) *UI {
-	return &UI{app: app, engine: engine, store: store, dataDir: dataDir, cfgPath: cfgPath, version: version}
+	return &UI{app: app, engine: engine, store: store, dataDir: dataDir, cfgPath: cfgPath, version: version, icons: haveIcons()}
 }
 
 // Install registers the menu and paints the initial state.
@@ -48,7 +51,7 @@ func (u *UI) Install() {
 // Refresh repaints the menu bar title and any open menu.
 func (u *UI) Refresh() {
 	v := u.engine.Snapshot()
-	u.app.SetMenuState(&menuet.MenuState{Runs: u.titleRuns(v)})
+	u.app.SetMenuState(u.menuState(v))
 	u.app.MenuChanged()
 }
 
@@ -93,42 +96,57 @@ func (u *UI) OnFinished(fin pomodoro.Finished) {
 	})
 }
 
-// titleRuns builds the status item text. It is deliberately monochrome: no run
-// carries a hue, so every glyph resolves to the menu bar's own label color and
-// inverts correctly in dark mode and under a tinted wallpaper. State is carried
-// by shape (solid dot for focus, hollow for a break) and by weight (dimmed
-// while idle or paused), never by color. Digits are monospaced so the item
-// keeps a constant width instead of jittering every second.
-func (u *UI) titleRuns(v View) []menuet.TextRun {
+// menuState builds the status item. It is deliberately monochrome: the icon
+// is a template image and no run carries a color, so AppKit renders both in
+// the menu bar's own label color — white over a dark bar, black over a light
+// one, like every system icon. State is carried by shape alone (a solid
+// tomato for focus, an outline on a break, a pause mark when paused), never by
+// color or dimming. Digits are monospaced so the item keeps a constant width
+// instead of jittering every second.
+func (u *UI) menuState(v View) *menuet.MenuState {
 	cfg := u.engine.Config()
-	symbol := menuet.TextRun{Text: v.Phase.Symbol(), FontSize: 12}
+	paused := v.State == pomodoro.StatePaused
 
+	var runs []menuet.TextRun
 	switch {
 	case v.State == pomodoro.StateIdle:
-		symbol.Color = menuet.LabelSecondary
-		runs := []menuet.TextRun{symbol}
 		if n := u.store.Range(pomodoro.StartOfDay(time.Now()), time.Now().Add(time.Second)).Completed; n > 0 {
-			runs = append(runs, menuet.TextRun{
-				Text: " " + strconv.Itoa(n), FontSize: 12, Monospaced: true, Color: menuet.LabelSecondary,
-			})
+			runs = append(runs, menuet.TextRun{Text: " " + strconv.Itoa(n), FontSize: 12, Monospaced: true})
 		}
-		return runs
-
-	case !cfg.ShowCountdown:
-		// Nothing but the glyph: full strength while running, dimmed when paused.
-		if v.State == pomodoro.StatePaused {
-			symbol.Color = menuet.LabelTertiary
-		}
-		return []menuet.TextRun{symbol}
-
-	default:
-		digits := menuet.TextRun{Text: " " + clock(v.Remaining), FontSize: 13, Monospaced: true}
-		if v.State == pomodoro.StatePaused {
-			symbol.Color = menuet.LabelTertiary
-			digits.Color = menuet.LabelTertiary
-		}
-		return []menuet.TextRun{symbol, digits}
+	case cfg.ShowCountdown:
+		runs = append(runs, menuet.TextRun{Text: " " + clock(v.Remaining), FontSize: 13, Monospaced: true})
 	}
+
+	if !u.icons {
+		// A bare binary has no Resources directory to load the icon from;
+		// fall back to a glyph so the item is never blank.
+		glyph := v.Phase.Symbol()
+		if paused {
+			glyph = "‖" // ‖ DOUBLE VERTICAL LINE
+		}
+		runs = append([]menuet.TextRun{{Text: glyph, FontSize: 12}}, runs...)
+		return &menuet.MenuState{Runs: runs}
+	}
+
+	icon := "tomato-focus"
+	if v.Phase.IsBreak() {
+		icon = "tomato-break"
+	}
+	if paused {
+		icon += "-paused"
+	}
+	return &menuet.MenuState{Image: icon, Runs: runs}
+}
+
+// haveIcons reports whether the status-bar images were bundled next to the
+// executable, where NSImage imageNamed: will find them.
+func haveIcons() bool {
+	exe, err := os.Executable()
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(filepath.Join(filepath.Dir(exe), "..", "Resources", "tomato-focus.png"))
+	return err == nil
 }
 
 // View is a local alias so the render helpers read cleanly.

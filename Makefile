@@ -15,13 +15,14 @@ INSTALL_DIR ?= /Applications
 BINARY   := $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLIST    := $(BUNDLE)/Contents/Info.plist
 ICON     := $(BUNDLE)/Contents/Resources/icon.icns
+TRAY     := $(BUNDLE)/Contents/Resources/tomato-focus.png
 SOURCES  := $(shell find . -name '*.go' -not -path './$(BUNDLE)/*')
 
 .PHONY: all
 all: bundle
 
 .PHONY: bundle
-bundle: $(BINARY) $(PLIST) $(ICON) ## Build and sign Pomodoro.app
+bundle: $(BINARY) $(PLIST) $(ICON) $(TRAY) ## Build and sign Pomodoro.app
 	@codesign -f -s "$(IDENTITY)" $(if $(filter-out -,$(IDENTITY)),--options runtime --timestamp,) "$(BUNDLE)"
 	@echo "Built $(BUNDLE)"
 
@@ -32,6 +33,11 @@ $(BINARY): $(SOURCES) go.mod go.sum
 $(ICON):
 	@mkdir -p "$(dir $@)"
 	go run github.com/caseymrm/menuet/v2/cmd/appicon -name "$(APP)" -color "$(ICON_COLOR)" -o "$@"
+
+# Status-bar template images. One target stands in for the whole set; they
+# are all drawn by the same run.
+$(TRAY): cmd/statusicon/main.go
+	go run ./cmd/statusicon -o "$(dir $@)"
 
 # LSUIElement keeps the app out of the Dock and the app switcher: it lives in
 # the status bar only.
@@ -86,7 +92,7 @@ check: ## Format check, vet and test
 	go test ./...
 
 .PHONY: preview
-preview: $(BINARY) $(PLIST) ## Dump the menu as JSON without opening a window
+preview: $(BINARY) $(PLIST) $(TRAY) ## Dump the menu as JSON without opening a window
 	MENUET_SNAPSHOT_PATH=menu-preview.json MENUET_SNAPSHOT_DELAY=1s "./$(BINARY)"
 	@echo "Wrote menu-preview.json"
 
