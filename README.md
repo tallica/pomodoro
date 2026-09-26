@@ -83,6 +83,7 @@ Everything in the Settings submenu is saved immediately:
 | Long break after | 4 rounds | only *completed* focus rounds count |
 | Auto-start breaks | on | when a focus round runs out; **Skip** always starts the next phase |
 | Auto-start next focus | off | when a break runs out |
+| Turn on macOS Focus | off | during focus rounds; see below |
 | Play a sound | on | system sounds, no assets bundled |
 | Show notifications | on | |
 | Show countdown in menu bar | on | off shows just the tomato |
@@ -90,6 +91,21 @@ Everything in the Settings submenu is saved immediately:
 
 Changing a length never disturbs a phase that is already running — it applies
 from the next one.
+
+### macOS Focus
+
+macOS has no API for an app to switch a Focus, so **Turn on macOS Focus** runs
+two shortcuts you create once in the Shortcuts app:
+
+| Shortcut name | Action |
+| --- | --- |
+| `Pomodoro Focus On` | **Set Focus** → turn *Do Not Disturb* (or any Focus) **On** until turned off |
+| `Pomodoro Focus Off` | **Set Focus** → turn the same Focus **Off** |
+
+The names must match exactly. The Focus is on while a focus round is running and
+turned off when it is paused, ends, is skipped or reset, when you switch the
+setting off, and when you quit. Until both shortcuts exist, the menu shows a row
+saying which are missing.
 
 ## Where your data lives
 
@@ -136,6 +152,7 @@ main.go                      wiring
 internal/pomodoro/config.go  settings, load/save, bounds
 internal/pomodoro/timer.go   the state machine (deadline-based, sleep-safe)
 internal/pomodoro/store.go   append-only session log and the stats over it
+internal/focusmode/          runs the Focus shortcuts
 internal/ui/menu.go          status item and menu
 internal/ui/settings.go      settings submenu
 ```

@@ -11,6 +11,7 @@ import (
 
 	"github.com/caseymrm/menuet/v2"
 
+	"github.com/tallica/pomodoro/internal/focusmode"
 	"github.com/tallica/pomodoro/internal/pomodoro"
 )
 
@@ -23,13 +24,16 @@ type UI struct {
 	cfgPath string
 	version string
 	icons   bool // status-bar images are bundled; see haveIcons
+	focus   *focusmode.Controller
 
 	notifyDenied atomic.Bool
+	focusWanted  atomic.Bool              // last value passed to focus.Set
+	focusMissing atomic.Pointer[[]string] // nil until the shortcuts are checked
 }
 
 // New wires a UI onto the menuet application singleton.
-func New(app *menuet.Application, engine *pomodoro.Engine, store *pomodoro.Store, dataDir, cfgPath, version string) *UI {
-	return &UI{app: app, engine: engine, store: store, dataDir: dataDir, cfgPath: cfgPath, version: version, icons: haveIcons()}
+func New(app *menuet.Application, engine *pomodoro.Engine, store *pomodoro.Store, focus *focusmode.Controller, dataDir, cfgPath, version string) *UI {
+	return &UI{app: app, engine: engine, store: store, focus: focus, dataDir: dataDir, cfgPath: cfgPath, version: version, icons: haveIcons()}
 }
 
 // Install registers the menu and paints the initial state.
@@ -46,11 +50,15 @@ func (u *UI) Install() {
 			u.Refresh()
 		}
 	}()
+	if u.engine.Config().FocusMode {
+		u.checkShortcuts()
+	}
 }
 
 // Refresh repaints the menu bar title and any open menu.
 func (u *UI) Refresh() {
 	v := u.engine.Snapshot()
+	u.syncFocus(v)
 	u.app.SetMenuState(u.menuState(v))
 	u.app.MenuChanged()
 }
@@ -170,6 +178,9 @@ func (u *UI) children() []menuet.MenuItem {
 				_ = exec.Command("open", "x-apple.systempreferences:com.apple.preference.notifications").Run()
 			},
 		})
+	}
+	if warn, ok := u.focusWarning(); ok {
+		items = append(items, warn)
 	}
 	items = append(items, menuet.Regular{Text: "Settings", Children: u.settings})
 	return items

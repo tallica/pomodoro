@@ -28,6 +28,13 @@ func (u *UI) settings() []menuet.MenuItem {
 			func(c *pomodoro.Config, v bool) { c.AutoStartBreaks = v }),
 		u.toggle("Auto-start next focus", cfg.AutoStartFocus,
 			func(c *pomodoro.Config, v bool) { c.AutoStartFocus = v }),
+		u.toggle("Turn on macOS Focus", cfg.FocusMode,
+			func(c *pomodoro.Config, v bool) {
+				c.FocusMode = v
+				if v {
+					u.checkShortcuts()
+				}
+			}),
 		menuet.Separator{},
 		u.toggle("Play a sound", cfg.Sound,
 			func(c *pomodoro.Config, v bool) { c.Sound = v }),
