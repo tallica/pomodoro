@@ -81,8 +81,8 @@ Everything in the Settings submenu is saved immediately:
 | Short break | 5 min | |
 | Long break | 15 min | |
 | Long break after | 4 rounds | only *completed* focus rounds count |
-| Auto-start breaks | on | |
-| Auto-start next focus | off | |
+| Auto-start breaks | on | when a focus round runs out; **Skip** always starts the next phase |
+| Auto-start next focus | off | when a break runs out |
 | Play a sound | on | system sounds, no assets bundled |
 | Show notifications | on | |
 | Show countdown in menu bar | on | off shows just the tomato |

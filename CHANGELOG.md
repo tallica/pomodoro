@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Skip starts the next phase straight away.** Skipping a break used to leave
+  the focus round stopped when **Auto-start next focus** was off. The auto-start
+  settings now apply only to phases that run out on their own.
+
+### Removed
+
+- **Back to focus.** With Skip now starting focus straight away, it was the same
+  as **Skip to Focus** followed by Pause.
+
 ## [0.2.0] - 2026-09-26
 
 ### Changed

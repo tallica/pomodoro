@@ -232,14 +232,12 @@ func (u *UI) controls(v View) []menuet.MenuItem {
 		primary = "Resume"
 	}
 
-	items := []menuet.MenuItem{
+	return []menuet.MenuItem{
 		menuet.Regular{
 			Text:     primary,
 			Clicked:  u.engine.Toggle,
 			Shortcut: &menuet.Shortcut{KeyCode: menuet.KeySpace, Modifiers: menuet.ModCtrl | menuet.ModAlt},
 		},
-	}
-	items = append(items,
 		menuet.Regular{
 			Text:     "Skip to " + v.Next.Label(),
 			Clicked:  u.engine.Skip,
@@ -249,15 +247,7 @@ func (u *UI) controls(v View) []menuet.MenuItem {
 			Text:    "Restart " + v.Phase.Label(),
 			Clicked: u.engine.Reset,
 		},
-	)
-
-	if v.Phase.IsBreak() {
-		items = append(items, menuet.Regular{
-			Text:    "Back to focus",
-			Clicked: func() { u.engine.SwitchTo(pomodoro.PhaseFocus) },
-		})
 	}
-	return items
 }
 
 // statistics renders the three headline rows, each drilling into a breakdown.

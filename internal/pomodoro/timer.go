@@ -241,8 +241,9 @@ func (e *Engine) Reset() {
 	e.notify()
 }
 
-// Skip ends the current phase early and moves to the next one, honoring the
-// auto-start settings exactly as a natural completion would.
+// Skip ends the current phase early and starts the next one straight away.
+// Clicking Skip means the user is at the Mac and ready, so the auto-start
+// settings, which exist for phases that end unattended, do not apply.
 func (e *Engine) Skip() {
 	e.mu.Lock()
 	sess, logged := e.abandonLocked()
@@ -302,8 +303,9 @@ func (e *Engine) expire() (Finished, Session, bool) {
 	return e.advanceLocked(true), sess, true
 }
 
-// advanceLocked moves to the next phase and starts it when configured to. Only
-// a focus session that ran to completion counts toward the long-break cycle —
+// advanceLocked moves to the next phase and starts it: always when skipped,
+// per the auto-start settings when the phase ran out on its own. Only a focus
+// session that ran to completion counts toward the long-break cycle —
 // skipping out of one should not earn the long break.
 func (e *Engine) advanceLocked(natural bool) Finished {
 	done := e.phase
@@ -320,9 +322,12 @@ func (e *Engine) advanceLocked(natural bool) Finished {
 	e.remaining = e.total
 	e.state = StateIdle
 
-	auto := e.cfg.AutoStartFocus
-	if next.IsBreak() {
+	auto := !natural
+	switch {
+	case natural && next.IsBreak():
 		auto = e.cfg.AutoStartBreaks
+	case natural:
+		auto = e.cfg.AutoStartFocus
 	}
 	if auto {
 		e.startLocked()
