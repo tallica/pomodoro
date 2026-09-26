@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-26
+
 ### Changed
 
 - **Skip starts the next phase straight away.** Skipping a break used to leave
@@ -70,8 +72,7 @@ Initial release.
 - Changing a phase length never disturbs a phase already running; it applies
   from the next one.
 
-<!-- Add compare links once this has a remote, e.g.
-[Unreleased]: https://github.com/OWNER/pomodoro/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/OWNER/pomodoro/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/OWNER/pomodoro/releases/tag/v0.1.0
--->
+[Unreleased]: https://github.com/tallica/pomodoro/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/tallica/pomodoro/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/tallica/pomodoro/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/tallica/pomodoro/releases/tag/v0.1.0
