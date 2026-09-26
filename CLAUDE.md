@@ -27,10 +27,10 @@ ticker goroutine while the AppKit thread reads it, so races are real here).
 ### CI and releases
 
 `.github/workflows/` runs on `macos-latest` only — menuet needs cgo against
-AppKit. `test` runs `make check`, the race detector and `make bundle`; `vuln`
-runs `make audit` on changes and weekly. Pushing a `v*` tag runs `release`,
-which first runs `test` and `vuln` against the tagged commit (tags trigger
-nothing else), then builds the bundle, zips it as `Pomodoro-<tag>-macos.zip` and publishes a
+AppKit. `ci.yml` runs on master, PRs and `v*` tags: `test` (`make check`, the
+race detector, `make bundle`) and `audit` (calls `vuln.yml`, i.e. `make audit`).
+`vuln.yml` also runs weekly on its own. On a `v*` tag only, `release` waits for
+both, then builds the bundle, zips it as `Pomodoro-<tag>-macos.zip` and publishes a
 release whose notes are that version's `CHANGELOG.md` section
 (`scripts/release-notes.sh`). The tag fails to release without that section, so
 add it first.

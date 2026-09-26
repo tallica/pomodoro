@@ -1,22 +1,37 @@
-name: release
+name: CI
 
+# A `v*` tag runs the same checks as master and releases only if they pass.
+# macOS runners only: menuet wraps AppKit through cgo, so nothing builds
+# anywhere else.
 on:
   push:
+    branches: [master]
     tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  # Tags are not covered by test.yml or vuln.yml, so the release runs them
-  # itself and publishes nothing unless both pass.
   test:
-    uses: ./.github/workflows/test.yml
-  vuln:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make check
+      - run: go test -race ./...
+      - run: make bundle
+
+  audit:
     uses: ./.github/workflows/vuln.yml
 
   release:
-    needs: [test, vuln]
+    needs: [test, audit]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: macos-latest
     permissions:
       contents: write # to create the release
