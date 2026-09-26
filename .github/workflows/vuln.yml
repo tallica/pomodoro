@@ -1,0 +1,24 @@
+name: vuln
+
+# govulncheck reports only vulnerabilities the code can reach. Weekly as
+# well as on changes: an advisory can land with nothing here changing.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+  workflow_call: # release.yml runs it against the tagged commit
+
+jobs:
+  govulncheck:
+    # macOS, so the cgo AppKit code is part of what gets checked.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make audit

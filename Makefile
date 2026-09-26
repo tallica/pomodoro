@@ -91,6 +91,10 @@ check: ## Format check, vet and test
 	go vet ./...
 	go test ./...
 
+.PHONY: audit
+audit: ## Report vulnerabilities the code can reach (govulncheck)
+	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
 .PHONY: preview
 preview: $(BINARY) $(PLIST) $(TRAY) ## Dump the menu as JSON without opening a window
 	MENUET_SNAPSHOT_PATH=menu-preview.json MENUET_SNAPSHOT_DELAY=1s "./$(BINARY)"

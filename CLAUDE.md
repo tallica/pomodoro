@@ -13,6 +13,7 @@ is an `NSStatusItem` and its menu, via [menuet](https://github.com/caseymrm/menu
 ```sh
 make check          # gofmt check + go vet + go test — run this before calling work done
 make test           # tests only
+make audit          # govulncheck: vulnerabilities the code can actually reach
 make bundle         # build and ad-hoc sign Pomodoro.app
 make run            # bundle, kill any running instance, launch
 make install        # copy to /Applications
@@ -22,6 +23,17 @@ make preview        # dump the entire menu to menu-preview.json without a GUI
 Single test: `go test ./internal/pomodoro -run TestLongBreakEveryFourthRound -v`
 Race detector: `go test -race -count=2 ./...` (the engine is driven from a
 ticker goroutine while the AppKit thread reads it, so races are real here).
+
+### CI and releases
+
+`.github/workflows/` runs on `macos-latest` only — menuet needs cgo against
+AppKit. `test` runs `make check`, the race detector and `make bundle`; `vuln`
+runs `make audit` on changes and weekly. Pushing a `v*` tag runs `release`,
+which first runs `test` and `vuln` against the tagged commit (tags trigger
+nothing else), then builds the bundle, zips it as `Pomodoro-<tag>-macos.zip` and publishes a
+release whose notes are that version's `CHANGELOG.md` section
+(`scripts/release-notes.sh`). The tag fails to release without that section, so
+add it first.
 
 ### Seeing UI changes without a GUI
 

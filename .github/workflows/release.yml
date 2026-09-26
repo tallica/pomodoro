@@ -1,0 +1,36 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  # Tags are not covered by test.yml or vuln.yml, so the release runs them
+  # itself and publishes nothing unless both pass.
+  test:
+    uses: ./.github/workflows/test.yml
+  vuln:
+    uses: ./.github/workflows/vuln.yml
+
+  release:
+    needs: [test, vuln]
+    runs-on: macos-latest
+    permissions:
+      contents: write # to create the release
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the app version comes from git describe
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: scripts/release-notes.sh "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+      - run: make bundle
+      - run: ditto -c -k --keepParent Pomodoro.app "Pomodoro-$GITHUB_REF_NAME-macos.zip"
+      - run: gh release create "$GITHUB_REF_NAME" "Pomodoro-$GITHUB_REF_NAME-macos.zip" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -127,6 +127,7 @@ See [CHANGELOG.md](CHANGELOG.md). The format follows
 
 ```sh
 make check     # gofmt, go vet, go test
+make audit     # govulncheck: known vulnerabilities the code can reach
 make preview   # dump the whole menu to menu-preview.json without opening a window
 make bundle    # build and ad-hoc sign Pomodoro.app
 ```
