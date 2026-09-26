@@ -27,19 +27,22 @@ To start it automatically, open the menu and tick **Start at Login**.
 
 ## Using it
 
-The status item is monochrome — it takes the menu bar's own label color, so it
-inverts properly in dark mode and over a tinted wallpaper. Phase is carried by
-shape, not hue:
+The status item is a template image, so it takes the menu bar's own label
+color — black on a light bar, white on a dark one or over a tinted wallpaper,
+like the system icons beside it. Phase is carried by shape, not hue: a solid
+tomato while you focus, an outline on a break, and a pause mark when paused.
 
-```
-● 24:31     focusing        solid dot
-○ 04:12     on a break      hollow dot
-● 12:04     paused          dimmed
-● 3         idle, three pomodoros done today
-```
+| Menu bar | State |
+| --- | --- |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/focus-dark.png"><img src="docs/status/focus-light.png" height="24" alt="Solid tomato and countdown"></picture> | focusing |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/focus-paused-dark.png"><img src="docs/status/focus-paused-light.png" height="24" alt="Solid tomato with a pause mark"></picture> | focus, paused |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/break-dark.png"><img src="docs/status/break-light.png" height="24" alt="Outlined tomato and countdown"></picture> | on a break |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/break-paused-dark.png"><img src="docs/status/break-paused-light.png" height="24" alt="Outlined tomato with a pause mark"></picture> | break, paused |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/idle-dark.png"><img src="docs/status/idle-light.png" height="24" alt="Tomato and the number 3"></picture> | idle, three pomodoros done today |
 
-Turn off **Show countdown in menu bar** and it shrinks to the dot alone, which
-is the narrowest it gets — useful on a crowded bar.
+Turn off **Show countdown in menu bar** and it shrinks to the tomato alone,
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/status/icon-only-dark.png"><img src="docs/status/icon-only-light.png" height="24" alt="Tomato icon only"></picture>, which is the narrowest it gets — useful
+on a crowded bar.
 
 The menu holds everything else:
 
@@ -82,7 +85,7 @@ Everything in the Settings submenu is saved immediately:
 | Auto-start next focus | off | |
 | Play a sound | on | system sounds, no assets bundled |
 | Show notifications | on | |
-| Show countdown in menu bar | on | off shows just a status dot |
+| Show countdown in menu bar | on | off shows just the tomato |
 | Daily goal | 8 | drives the progress bar under Today |
 
 Changing a length never disturbs a phase that is already running — it applies
