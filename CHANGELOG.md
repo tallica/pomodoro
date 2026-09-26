@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-26
+
+### Fixed
+
+- **Informational menu rows are no longer greyed out.** The header, statistics
+  and version rows were drawn as disabled menu items, which faded them to a
+  single grey and flattened the difference between primary and secondary text.
+  They now render at full contrast, without a hover highlight.
+
 ## [0.3.0] - 2026-09-26
 
 ### Changed
@@ -72,7 +81,8 @@ Initial release.
 - Changing a phase length never disturbs a phase already running; it applies
   from the next one.
 
-[Unreleased]: https://github.com/tallica/pomodoro/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/tallica/pomodoro/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/tallica/pomodoro/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/tallica/pomodoro/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tallica/pomodoro/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tallica/pomodoro/releases/tag/v0.1.0
