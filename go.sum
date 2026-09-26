@@ -1,4 +1,4 @@
 github.com/caseymrm/askm v1.0.0 h1:Ff5QN5GwuyCzg63++hU1jV+1JVYHYd0sw6KUkVd2GiQ=
 github.com/caseymrm/askm v1.0.0/go.mod h1:raj+vtH8SsGkuSg1/970qaONNyNlIb7zFv2LDVk6j+U=
-github.com/caseymrm/menuet/v2 v2.16.0 h1:Rq9R/t0DmOAaVWvAt7nJQjOeliC8b9+For7MO9k0Mng=
-github.com/caseymrm/menuet/v2 v2.16.0/go.mod h1:fw/xps1icldZXguIGgsokmkVgGd51N1h+X6evRuPv8s=
+github.com/tallica/menuet/v2 v2.0.0-20260926181426-123c4c7b3000 h1:49F5rzqTFNYjuYhehPac1OiWJ4ik6W8lKCTs5R+kKTw=
+github.com/tallica/menuet/v2 v2.0.0-20260926181426-123c4c7b3000/go.mod h1:fw/xps1icldZXguIGgsokmkVgGd51N1h+X6evRuPv8s=

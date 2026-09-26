@@ -209,6 +209,7 @@ func (u *UI) header(v View) []menuet.MenuItem {
 				{Text: v.Phase.Label(), FontWeight: menuet.WeightSemibold},
 				{Text: "  " + state, Monospaced: true, Color: menuet.LabelSecondary},
 			},
+			Static: true,
 		},
 		menuet.Regular{
 			Runs: []menuet.TextRun{
@@ -219,6 +220,7 @@ func (u *UI) header(v View) []menuet.MenuItem {
 					Monospaced: true, FontSize: 12, Color: menuet.LabelTertiary,
 				},
 			},
+			Static: true,
 		},
 	}
 }
@@ -290,7 +292,7 @@ func (u *UI) todayDetail() []menuet.MenuItem {
 	cfg := u.engine.Config()
 
 	items := []menuet.MenuItem{
-		menuet.Regular{Text: now.Format("Monday, 2 January"), FontWeight: menuet.WeightSemibold},
+		menuet.Regular{Text: now.Format("Monday, 2 January"), FontWeight: menuet.WeightSemibold, Static: true},
 	}
 	if cfg.DailyGoal > 0 {
 		items = append(items, menuet.Regular{
@@ -298,6 +300,7 @@ func (u *UI) todayDetail() []menuet.MenuItem {
 				{Text: bar(st.Completed, cfg.DailyGoal, 16) + " ", Monospaced: true, Color: menuet.LabelSecondary},
 				{Text: fmt.Sprintf("%d / %d", st.Completed, cfg.DailyGoal), Monospaced: true},
 			},
+			Static: true,
 		})
 	}
 	items = append(items,
@@ -312,7 +315,7 @@ func (u *UI) todayDetail() []menuet.MenuItem {
 
 	sessions := u.store.Today(now)
 	if len(sessions) == 0 {
-		items = append(items, menuet.Regular{Text: "No sessions yet today", Color: menuet.LabelTertiary})
+		items = append(items, menuet.Regular{Text: "No sessions yet today", Color: menuet.LabelTertiary, Static: true})
 		return items
 	}
 	if len(sessions) > 12 {
@@ -329,6 +332,7 @@ func (u *UI) todayDetail() []menuet.MenuItem {
 				{Text: s.Start.Format("15:04") + " – " + s.End.Format("15:04"), Monospaced: true},
 				{Text: "  " + human(s.Elapsed()), Monospaced: true, Color: menuet.LabelTertiary},
 			},
+			Static: true,
 		})
 	}
 	return items
@@ -343,6 +347,7 @@ func (u *UI) weekDetail() []menuet.MenuItem {
 		menuet.Regular{
 			Text:       fmt.Sprintf("Week of %s", start.Format("2 Jan")),
 			FontWeight: menuet.WeightSemibold,
+			Static:     true,
 		},
 	}
 
@@ -377,7 +382,7 @@ func (u *UI) monthDetail() []menuet.MenuItem {
 	st := u.store.Range(start, now.Add(time.Second))
 
 	items := []menuet.MenuItem{
-		menuet.Regular{Text: now.Format("January 2006"), FontWeight: menuet.WeightSemibold},
+		menuet.Regular{Text: now.Format("January 2006"), FontWeight: menuet.WeightSemibold, Static: true},
 	}
 
 	// Weekly buckets read better than 30 day rows in a menu.
@@ -406,6 +411,7 @@ func (u *UI) monthDetail() []menuet.MenuItem {
 				{Text: lpad(strconv.Itoa(w.stats.Completed), 3), Monospaced: true},
 				{Text: " · " + human(w.stats.Focus), Monospaced: true, Color: menuet.LabelTertiary},
 			},
+			Static: true,
 		})
 	}
 
@@ -428,7 +434,7 @@ func (u *UI) allTimeDetail() []menuet.MenuItem {
 	now := time.Now()
 	from, ok := u.store.First()
 	if !ok {
-		return []menuet.MenuItem{menuet.Regular{Text: "No sessions recorded yet"}}
+		return []menuet.MenuItem{menuet.Regular{Text: "No sessions recorded yet", Static: true}}
 	}
 	st := u.store.Range(from.Add(-time.Second), now.Add(time.Second))
 	span := int(pomodoro.StartOfDay(now).Sub(pomodoro.StartOfDay(from))/(24*time.Hour)) + 1
@@ -470,6 +476,7 @@ func dayRows(days []pomodoro.DayStat, peak int, now time.Time) []menuet.MenuItem
 				{Text: lpad(strconv.Itoa(d.Stats.Completed), 3), Monospaced: true},
 				{Text: " · " + human(d.Stats.Focus), Monospaced: true, Color: menuet.LabelTertiary},
 			},
+			Static: true,
 		})
 	}
 	return items
@@ -481,5 +488,6 @@ func infoRow(label, value string) menuet.Regular {
 			{Text: pad(label, 15), Monospaced: true, Color: menuet.LabelSecondary},
 			{Text: value, Monospaced: true},
 		},
+		Static: true,
 	}
 }

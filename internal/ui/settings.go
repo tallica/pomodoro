@@ -49,7 +49,8 @@ func (u *UI) settings() []menuet.MenuItem {
 		},
 		menuet.Separator{},
 		menuet.Regular{
-			Runs: []menuet.TextRun{{Text: "Pomodoro " + u.version, Color: menuet.LabelTertiary}},
+			Runs:   []menuet.TextRun{{Text: "Pomodoro " + u.version, Color: menuet.LabelTertiary}},
+			Static: true,
 		},
 	}
 }

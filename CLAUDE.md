@@ -8,6 +8,13 @@ A macOS status-bar Pomodoro timer in Go. No window, no Dock icon — the whole U
 is an `NSStatusItem` and its menu, via [menuet](https://github.com/caseymrm/menuet)
 (`github.com/caseymrm/menuet/v2`), which wraps AppKit through cgo.
 
+menuet comes from **the fork at
+[tallica/menuet](https://github.com/tallica/menuet)**, branch `static-rows`,
+pinned by a `replace` in `go.mod`. It keeps the upstream module path, so imports
+are unchanged. To move to a newer fork commit:
+`go mod edit -replace github.com/caseymrm/menuet/v2=github.com/tallica/menuet/v2@<sha> && go mod tidy`.
+Changes over upstream so far: `Regular.Static`.
+
 ## Commands
 
 ```sh
@@ -155,6 +162,12 @@ back*, so what is on disk is what is running.
   status item's runs carry **no color at all**: no dimming for idle or paused.
   State is carried by the icon's shape only. A bare binary without the bundle
   falls back to a text glyph (`haveIcons`).
+- **Informational rows set `Static: true`.** A `Regular` without `Clicked` or
+  `Children` is otherwise a disabled `NSMenuItem`, which AppKit draws faded
+  whatever its colors — the `Label*` hierarchy collapses into one grey. The
+  fork renders a static row as a custom view (`MenuetLabelView` in
+  `menuet.m`) at full contrast, with no hover highlight. Leave it off only for
+  something that really is an unavailable action.
 - **Do not use `Regular.Subtitle`.** It maps to `NSMenuItem.subtitle`, a plain
   string that drops run styling, and in practice renders as an empty band that
   still reserves height. Use a second `Regular` row instead.
