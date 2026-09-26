@@ -43,11 +43,17 @@ the same file.
 
 ## Architecture
 
-Three layers, one direction of dependency: `ui` → `pomodoro` → nothing.
+Three layers, one direction of dependency: `ui` → `pomodoro` → nothing
+(`ui` also uses the leaf package `focusmode`).
 
 - `internal/pomodoro/timer.go` — the state machine. Owns all mutable timer state.
 - `internal/pomodoro/store.go` — append-only session log and every statistic.
 - `internal/pomodoro/config.go` — settings, load/save, bounds.
+- `internal/focusmode/` — runs the user's `Pomodoro Focus On`/`Off` shortcuts
+  via `/usr/bin/shortcuts`; there is no public API to set a Focus. `UI.Refresh`
+  calls `Controller.Set` every time, so it must stay cheap and dedupe; runs
+  happen on its own goroutine. `main.go` calls `Close` on shutdown so quitting
+  mid-round turns the Focus off.
 - `internal/ui/` — renders a snapshot of the above into menu items. Holds no
   timer state of its own.
 - `main.go` — wiring only.

@@ -19,6 +19,7 @@ type Config struct {
 	Sound             bool `json:"sound"`
 	Notifications     bool `json:"notifications"`
 	ShowCountdown     bool `json:"show_countdown"`
+	FocusMode         bool `json:"focus_mode"` // run the Focus shortcuts during focus rounds
 	DailyGoal         int  `json:"daily_goal"`
 }
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/caseymrm/menuet/v2"
 
+	"github.com/tallica/pomodoro/internal/focusmode"
 	"github.com/tallica/pomodoro/internal/pomodoro"
 	"github.com/tallica/pomodoro/internal/ui"
 )
@@ -49,7 +50,8 @@ func main() {
 		OnSession:  func(s pomodoro.Session) { face.OnSession(s) },
 	})
 
-	face = ui.New(app, engine, store, dir, cfgPath, version)
+	focus := focusmode.New()
+	face = ui.New(app, engine, store, focus, dir, cfgPath, version)
 	face.Install()
 
 	wg, ctx := app.GracefulShutdownHandles()
@@ -57,6 +59,13 @@ func main() {
 	go func() {
 		defer wg.Done()
 		engine.Run(ctx)
+	}()
+	// Quitting mid-round must not leave the macOS Focus on.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		<-ctx.Done()
+		focus.Close()
 	}()
 
 	app.RunApplication()

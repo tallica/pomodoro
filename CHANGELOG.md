@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Turn on macOS Focus.** A setting that switches a Focus on while a focus
+  round runs and off again on pause, break, reset or quit. It runs the
+  `Pomodoro Focus On` and `Pomodoro Focus Off` shortcuts, which you create in
+  the Shortcuts app, and the menu says so when they are missing.
+
+### Changed
+
+- **Skip starts the next phase straight away.** Skipping a break used to leave
+  the focus round stopped when **Auto-start next focus** was off. The auto-start
+  settings now apply only to phases that run out on their own.
+
+### Removed
+
+- **Back to focus.** With Skip now starting focus straight away, it was the same
+  as **Skip to Focus** followed by Pause.
+
 ## [0.2.0] - 2026-09-26
 
 ### Changed

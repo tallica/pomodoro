@@ -179,6 +179,40 @@ func TestSkipDoesNotCountTowardLongBreakCycle(t *testing.T) {
 	}
 }
 
+func TestFocusWaitsAfterBreakRunsOut(t *testing.T) {
+	cfg := DefaultConfig()
+	cfg.AutoStartBreaks = true
+	cfg.AutoStartFocus = false
+	e, clk, _ := newTestEngine(t, cfg)
+
+	e.Start()
+	clk.advance(cfg.Duration(PhaseFocus))
+	tick(e)
+	clk.advance(cfg.Duration(PhaseShortBreak))
+	tick(e)
+	if v := e.Snapshot(); v.Phase != PhaseFocus || v.State != StateIdle {
+		t.Fatalf("after break ran out: phase=%v state=%v, want idle focus", v.Phase, v.State)
+	}
+}
+
+func TestSkipStartsNextPhaseRegardlessOfAutoStart(t *testing.T) {
+	cfg := DefaultConfig()
+	cfg.AutoStartBreaks = false
+	cfg.AutoStartFocus = false
+	e, _, _ := newTestEngine(t, cfg)
+
+	e.Start()
+	e.Skip()
+	if v := e.Snapshot(); v.Phase != PhaseShortBreak || v.State != StateRunning {
+		t.Fatalf("after skipping focus: phase=%v state=%v, want a running short break", v.Phase, v.State)
+	}
+
+	e.Skip()
+	if v := e.Snapshot(); v.Phase != PhaseFocus || v.State != StateRunning {
+		t.Fatalf("after skipping break: phase=%v state=%v, want running focus", v.Phase, v.State)
+	}
+}
+
 func TestSetConfigLeavesRunningTimerAlone(t *testing.T) {
 	e, clk, _ := newTestEngine(t, DefaultConfig())
 	e.Start()
