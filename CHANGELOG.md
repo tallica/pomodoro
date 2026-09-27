@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-09-27
+
+### Fixed
+
+- **Release binary no longer demands a newer macOS than it needs.** The build
+  didn't pin `MACOSX_DEPLOYMENT_TARGET`, so cgo stamped the binary with
+  whatever SDK the build machine had installed rather than the `13.0` already
+  declared in `Info.plist`. On CI's current macOS 26 SDK that meant the
+  published app refused to launch below macOS 26. The Makefile now pins the
+  deployment target so the binary matches what it advertises.
+
 ## [0.3.1] - 2026-09-26
 
 ### Fixed
@@ -81,7 +92,8 @@ Initial release.
 - Changing a phase length never disturbs a phase already running; it applies
   from the next one.
 
-[Unreleased]: https://github.com/tallica/pomodoro/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/tallica/pomodoro/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/tallica/pomodoro/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/tallica/pomodoro/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/tallica/pomodoro/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tallica/pomodoro/compare/v0.1.0...v0.2.0

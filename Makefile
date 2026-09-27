@@ -12,6 +12,15 @@ IDENTITY    ?= -
 ICON_COLOR  ?= \#D64541
 INSTALL_DIR ?= /Applications
 
+# menuet's cgo bridge into AppKit picks up whatever macOS SDK the build
+# machine has installed and stamps that as the binary's minimum OS version
+# (LC_BUILD_VERSION minos) unless told otherwise. On a CI runner with a newer
+# SDK than LSMinimumSystemVersion below, that silently raises the real
+# requirement — Gatekeeper then refuses to launch on anything older than the
+# CI image, no matter what the plist says. Pin it so the binary matches what
+# we actually advertise.
+export MACOSX_DEPLOYMENT_TARGET := 13.0
+
 BINARY   := $(BUNDLE)/Contents/MacOS/$(EXEC)
 PLIST    := $(BUNDLE)/Contents/Info.plist
 ICON     := $(BUNDLE)/Contents/Resources/icon.icns
