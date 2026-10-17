@@ -157,11 +157,26 @@ func (e *Engine) Run(ctx context.Context) {
 	defer timer.Stop()
 
 	lastShown := -1
+	day := StartOfDay(e.now())
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-timer.C:
+			// The idle menu-bar badge counts today's completed pomodoros, and
+			// an idle engine emits nothing else, so without this the previous
+			// day's count would sit there until the next start, pause or phase
+			// change. Crossing midnight is a visible state change. The
+			// long-break cycle is a day's worth of rounds, so it starts over
+			// too rather than carrying yesterday's rounds into a fresh day.
+			if d := StartOfDay(e.now()); !d.Equal(day) {
+				day = d
+				e.mu.Lock()
+				e.focusDone = 0
+				e.mu.Unlock()
+				e.notify()
+			}
+
 			if fin, sess, ok := e.expire(); ok {
 				e.emit(fin, sess)
 				lastShown = -1

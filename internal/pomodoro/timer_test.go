@@ -295,3 +295,49 @@ func TestRunLoopDrivesCompletion(t *testing.T) {
 		t.Fatalf("after completion: %+v", v)
 	}
 }
+
+// TestRunReportsTheDayChange covers the state that is scoped to a day: the
+// idle menu-bar badge counting today's pomodoros, and the long-break cycle.
+// Crossing midnight must repaint the badge and restart the round count, and an
+// idle engine emits no other event that would.
+func TestRunReportsTheDayChange(t *testing.T) {
+	clk := &fakeClock{t: time.Date(2026, 9, 19, 23, 59, 30, 0, time.UTC)}
+	updates := make(chan struct{}, 8)
+	captured := make(chan struct{}, 1)
+
+	e := NewEngine(DefaultConfig(), Events{OnUpdate: func() {
+		select {
+		case updates <- struct{}{}:
+		default:
+		}
+	}})
+	e.now = func() time.Time {
+		now := clk.now()
+		// Run reads the clock once before its loop to remember the day; signal
+		// after that read so the test crosses midnight at the right moment.
+		select {
+		case captured <- struct{}{}:
+		default:
+		}
+		return now
+	}
+	e.mu.Lock()
+	e.focusDone = 3 // three rounds done; the next long break is one away
+	e.mu.Unlock()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go e.Run(ctx)
+
+	<-captured
+	clk.advance(time.Minute) // past midnight into 20 September
+
+	select {
+	case <-updates:
+	case <-time.After(2 * time.Second):
+		t.Fatal("Run did not report the day change")
+	}
+	if got := e.Snapshot().CycleDone; got != 0 {
+		t.Fatalf("cycle after midnight = %d, want 0 (a fresh day's first round)", got)
+	}
+}

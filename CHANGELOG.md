@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A new day no longer inherits yesterday's count in the menu bar.** With the
+  app left running overnight, the idle status item kept showing the previous
+  day's completed pomodoros until something else happened to repaint it. The
+  engine now notices the day rollover and refreshes the menu, so a day without
+  a session yet shows no count.
+- **The long-break cycle restarts each day.** The round count carried over
+  midnight, so three rounds finished at night left the next morning's first
+  focus one round from a long break. A new day now starts at round one.
+
 ## [0.3.2] - 2026-09-27
 
 ### Fixed
