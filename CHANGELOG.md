@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Go 1.27.2 is now required.** Its standard library fixes the eight
+  advisories `govulncheck` reported in 1.27.1, which failed the CI audit.
 - **A new day no longer inherits yesterday's count in the menu bar.** With the
   app left running overnight, the idle status item kept showing the previous
   day's completed pomodoros until something else happened to repaint it. The
