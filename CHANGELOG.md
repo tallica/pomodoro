@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-17
+
 ### Fixed
 
 - **Go 1.27.2 is now required.** Its standard library fixes the eight
